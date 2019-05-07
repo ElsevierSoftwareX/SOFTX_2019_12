@@ -1,0 +1,186 @@
+package it.unipr.netsec.nemo.routing.graph;
+
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+
+/** A Path that contains only the following information:
+ * <ul>
+ * <li/> first node
+ * <li/> first edge (if present)
+ * <li/> last node
+ * <li/> size and length
+ * </ul>
+ * */
+public class Path {
+
+	/** First node */
+	Node root=null;
+	
+	/** First edge */
+	Edge edge0=null;
+
+	/** Second edge */
+	Edge edge1=null;
+
+	/** Last node */
+	Node dest=null;
+	
+	/** number of nodes */
+	int size=0;
+
+	/** Creates a new empty path. */
+	public Path() {
+	}
+
+	
+	/** Creates a new path.
+	 * @param root the root node of the path */
+	public Path(Node root) {
+		this.root=root;
+		this.dest=root;
+		this.size=1;
+	}
+
+	
+	/** Creates a new path.
+	 * @param root the root node of the path */
+	public Path(Edge[] edges) {
+		this.root=edges[0].getSourceNode();
+		this.edge0=edges[0];
+		if (edges.length>1) this.edge1=edges[1];
+		this.dest=edges[edges.length-1].getDestNode();
+		this.size=edges.length+1;
+	}
+
+	
+	/** Creates a copy.
+	 * @param path the path to be copied */
+	public Path(Path path) {
+		this.root=path.root;
+		this.edge0=path.edge0;
+		this.edge1=path.edge1;
+		this.dest=path.dest;
+		this.size=path.size;
+	}
+
+	
+	//@Override
+	public void setRoot(Node root) {
+		if (root==null) throw new RuntimeException("Impossible to set 'null' root");
+		// else
+		if (size>0) throw new RuntimeException("Impossible to set the root of a not empty path");
+		// else
+		this.root=root;
+		this.dest=root;
+		this.size=1;
+	}
+
+	
+	//@Override
+	public void add(Edge edge) {
+	    if (size==0) throw new RuntimeException("Impossible to add an edge to a path without a root");
+		// else
+		if (edge==null || !edge.getSourceNode().equals(dest)) throw new RuntimeException("Impossible to add edge '"+edge+"' to this path");
+		// else
+	    if (this.edge0==null) this.edge0=edge;
+	    else if (this.edge1==null) this.edge1=edge;
+		this.dest=edge.getDestNode();
+		this.size++;
+	}
+
+	
+	//@Override
+	public int size() {
+		return size;
+	}
+	
+	
+	/*@Override
+	public void append(Path path) {
+		if (path.size()==0) return;
+		// else
+		if ((path instanceof Path && !((Path)path).root.equals(dest)) || !path.getNodePath().get(0).equals(dest)) throw new RuntimeException("Impossible to append a path with root '"+path.getNodePath().get(0)+"' to this path");
+		// else
+		this.dest=path instanceof Path? ((Path)path).dest : path.getNodePath().get(path.getNodePath().size()-1);
+		this.size+=path.size();
+	}*/
+	public void append(Path path) {
+		if (path.size==0) return;
+		// else
+		if (!path.root.equals(dest)) throw new RuntimeException("Impossible to append a path with root '"+path.getNodePath().get(0)+"' to this path");
+		// else
+		if (this.edge0==null) {
+			this.edge0=path.edge0;
+			this.edge1=path.edge1;
+		}
+		else {
+			if (this.edge1==null) {
+				this.edge1=path.edge0;
+			}
+		}
+		this.dest=path.dest;
+		this.size+=path.size-1;
+	}
+
+	
+	//@Override
+	public boolean equals(Object o) {
+		throw new RuntimeException("Unsupported method");
+	}
+
+
+	//@Override
+	public boolean containsNode(String node) {
+		throw new RuntimeException("Unsupported method");
+	}
+
+	
+	//@Override
+	public boolean containsEdge(String edge) {
+		throw new RuntimeException("Unsupported method");
+	}
+
+	
+	//@Override
+	public Iterator<Node> getNodeIterator() {
+		throw new RuntimeException("Unsupported method");
+	}
+
+	
+	//@Override
+	public List<Node> getNodePath() {
+		throw new RuntimeException("Unsupported method");
+	}
+
+	
+	//@Override
+	public Iterator<Edge> getEdgeIterator() {
+		throw new RuntimeException("Unsupported method");
+	}
+    
+
+	//@Override
+	public List<Edge> getEdgePath() {
+		ArrayList<Edge> edges=new ArrayList<Edge>();
+		if (edge0!=null) {
+			edges.add(edge0);
+			if (edge1!=null) edges.add(edge1);
+		}
+		return edges;
+	}
+
+
+	//@Override
+	public int length() {
+		return size-1;
+	}
+	
+	
+	//@Override
+	public String toString() {
+		throw new RuntimeException("Unsupported method");
+	}
+}

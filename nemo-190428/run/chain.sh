@@ -1,0 +1,1 @@
+java -cp networkfunction.jar -Djava.library.path=. it.unipr.netsec.netfilter.networkfunction.NetworkFunctionChain $@
